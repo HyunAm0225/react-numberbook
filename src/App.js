@@ -1,26 +1,68 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+// 경로 : src/App.js// 경로 : src/App.js
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import React, {Component} from 'react';
+import "./App.css";
+import InputBox from './components/InputBox/InputBox';
+import PhoneList from "./components/PhoneList/PhoneList";
+import { dummyData, nextId, setNextId } from "./lib/dummyData.js";
+
+
+class App extends Component {
+  state = {
+    dummyData,
+    name: "",
+    phone: ""
+  };
+
+  handleInput = e => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  };
+
+  handleSubmit = () => {
+    const { dummyData, name, phone } = this.state;
+
+    if (name === "" || phone === "") return;
+
+    this.setState({
+      dummyData: {
+        ...dummyData,
+        [nextId]: {
+          id: nextId,
+          name,
+          phone
+        }
+      },
+      name: "",
+      phone: ""
+    });
+
+    setNextId();
+  };
+
+  handleRemove = id =>{
+    const {[id] : _, ...dummyData } = this.state.dummyData;
+
+    this.setState({dummyData});
+  }
+
+  render() {
+    const { handleInput, handleSubmit } = this;
+    const { dummyData, name, phone } = this.state;
+
+    return (
+      <div className="container">
+        <InputBox
+          name={name}
+          phone={phone}
+          onChange={handleInput}
+          onSubmit={handleSubmit}
+        />
+        <PhoneList list={dummyData} deleteItem={this.handleRemove}/>
+      </div>
+    );
+  }
 }
 
 export default App;
